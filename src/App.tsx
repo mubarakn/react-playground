@@ -1,24 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useRef, useEffect } from 'react'
+import MaskedInput from './components/MaskedInput';
 
-function App() {
+const App = () => {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='h-screen flex'>
+      <div className='m-auto'>
+        {/* <h1 className='font-semibold mb-4'>Enter Aadhaar Number:</h1> */}
+        <MaskedInput ref={inputRef} length={12} onChange={value => console.log(value)} />
+      </div>
     </div>
   );
 }
