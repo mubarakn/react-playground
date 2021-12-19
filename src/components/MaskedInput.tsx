@@ -20,10 +20,8 @@ const mapCharToRegex = (char: string) => {
 }
 
 const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, onChange }, ref) => {
-  const pattern = "A X 9 A X 9"
+  const pattern = "9999 9999 9999"
   const regexPatternArray = pattern.split('').map(mapCharToRegex)
-  const reversePattern = pattern.split('').reverse().join('')
-  const reverseRegexPatternArray = reversePattern.split('').map(mapCharToRegex)
   
   const parentRef = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState<string[]>(new Array(pattern.length).fill(''))
@@ -57,11 +55,10 @@ const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, on
   const handleGoBack = (index: number) => {
     if (index > 0) {
       const reversePattern = pattern.split('').reverse().join('')
-      console.log(pattern, 'reversePattern', reversePattern)
-      const reversePrevInputIndex = reversePattern.slice(pattern.length - index).search(/(X|9|A){1}/)
-      const prevInputIndex = pattern.length-reversePrevInputIndex
-      console.log(reversePrevInputIndex, prevInputIndex)
-      const elem = parentRef.current?.children.item(prevInputIndex) as HTMLInputElement
+      const reverseStartIndex = reversePattern.length - index
+      const reversePrevIndex = reversePattern.slice(reverseStartIndex).search(/(X|9|A){1}/)
+      const prevIndex = reversePattern.length - 1 - (reversePrevIndex + reverseStartIndex)
+      const elem = parentRef.current?.children.item(prevIndex) as HTMLInputElement
       elem.disabled = false
       elem.focus()
     }
@@ -84,7 +81,7 @@ const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, on
           )
         } else {
           return (
-            <span key={index}>
+            <span key={index} className=' p-4 w-14 text-center text-xl '>
               {char}
             </span>
           )

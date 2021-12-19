@@ -24,7 +24,7 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({ index, value, on
             type='text'
             pattern='\d*'
             maxLength={1}
-            className='uppercase bg-gray-100 p-4 w-14 text-center text-xl focus:outline-none border-b-2 border-transparent focus:border-blue-500 ring-inset'
+            className='uppercase bg-gray-200 p-4 w-14 text-center text-xl focus:outline-none border-b-2 border-transparent focus:border-blue-500 ring-inset'
             value={value}
             onChange={event => onChange(index, event.target.value)}
             onKeyDown={handleKeyDown}
