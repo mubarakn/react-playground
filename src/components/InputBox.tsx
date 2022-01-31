@@ -11,13 +11,13 @@ interface InputBoxProps {
 const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(({ index, value, onChange, goBack, disabled }, ref) => {
     
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (value === '' && event.key === 'Backspace') {
-            goBack(index)   
+        if (event.key === 'Backspace') {
+            onChange(index, '')
+            goBack(index)
         } else if (event.key === ' ') {
             event.preventDefault()
         }
     }
-
     return (
         <input
             ref={ref}

@@ -12,7 +12,7 @@ const App = () => {
     <div className='h-screen flex'>
       <div className='m-auto'>
         {/* <h1 className='font-semibold mb-4'>Enter Aadhaar Number:</h1> */}
-        <MaskedInput ref={inputRef} length={12} onChange={value => console.log(value)} />
+        <MaskedInput ref={inputRef} pattern='9 9 9 9 9 9' onChange={value => console.log(value)} />
       </div>
     </div>
   );

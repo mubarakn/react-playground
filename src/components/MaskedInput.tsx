@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect, forwardRef } from 'react'
+import { useState, useRef, useEffect, forwardRef, MouseEventHandler } from 'react'
 import InputBox from './InputBox';
 
 interface MaskedInputProps {
-  length: number;
+  pattern: string;
   onChange: (value: string) => void
 }
 
@@ -18,12 +18,10 @@ const mapCharToRegex = (char: string) => {
       return char
   }
 }
+const allowedChars = ["X", "A", "9"]
 
-const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, onChange }, ref) => {
-  const pattern = "A X 9 A X 9"
+const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ pattern, onChange }, ref) => {
   const regexPatternArray = pattern.split('').map(mapCharToRegex)
-  const reversePattern = pattern.split('').reverse().join('')
-  const reverseRegexPatternArray = reversePattern.split('').map(mapCharToRegex)
   
   const parentRef = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState<string[]>(new Array(pattern.length).fill(''))
@@ -39,7 +37,7 @@ const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, on
     if(!value.match(new RegExp(regexPatternArray[index]))) {
       return
     }
-
+    
     const newValue = [...inputValue]
     newValue[index] = value
     setInputValue(newValue)
@@ -56,21 +54,41 @@ const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, on
 
   const handleGoBack = (index: number) => {
     if (index > 0) {
-      const reversePattern = pattern.split('').reverse().join('')
-      console.log(pattern, 'reversePattern', reversePattern)
-      const reversePrevInputIndex = reversePattern.slice(pattern.length - index).search(/(X|9|A){1}/)
-      const prevInputIndex = pattern.length-reversePrevInputIndex
-      console.log(reversePrevInputIndex, prevInputIndex)
-      const elem = parentRef.current?.children.item(prevInputIndex) as HTMLInputElement
-      elem.disabled = false
-      elem.focus()
+      // (parentRef.current?.children.item(index) as HTMLInputElement).disabled = true;
+      let prevIndex = index-1
+      while (prevIndex >= 0) {
+        if (allowedChars.includes(pattern.slice(prevIndex, prevIndex+1))) {
+          const element = parentRef.current?.children.item(prevIndex) as HTMLInputElement
+          element.disabled = false
+          element.select()
+          element.focus()
+          break;
+        }
+        prevIndex--
+      }
+    }
+  }
+
+  const handleFocus = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if ((e.target !== parentRef.current && e.target instanceof HTMLInputElement && !(e.target as HTMLInputElement).disabled)) {
+      return
+    }
+    const children = parentRef.current?.children as HTMLCollection
+    for (let i = children.length-1; i >= 0; i--) {
+      if (allowedChars.includes(pattern.slice(i, i+1))) {
+        const element = children[i] as HTMLInputElement;
+        if (!element.disabled) {
+          element.focus()
+          break;
+        }
+      }
     }
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }} ref={parentRef}>
+    <div style={{ display: 'flex', alignItems: 'center' }} ref={parentRef} onClick={handleFocus}>
       {pattern.split('').map((char, index) => {
-        if (['X', '9', 'A'].includes(char)) {
+        if (allowedChars.includes(char)) {
           return (
             <InputBox
               ref={index === 0 ? ref : null }
@@ -83,11 +101,7 @@ const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(({ length, on
               />
           )
         } else {
-          return (
-            <span key={index}>
-              {char}
-            </span>
-          )
+          return <span key={index}>{char}</span>
         }
       })}
     </div>
